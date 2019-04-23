@@ -2,8 +2,8 @@ name := "flink-lambda-bug"
 
 version := "0.1"
 
-scalaVersion := "2.11.12"
-//scalaVersion := "2.12.8"
+//scalaVersion := "2.11.12"
+scalaVersion := "2.12.8"
 
 val flinkVersion = "1.7.2"
 val scalaTestKafkaEmbeddedVersion = "0.14.0"
