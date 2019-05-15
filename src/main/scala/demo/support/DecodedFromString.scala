@@ -1,6 +1,6 @@
 package demo.support
 
-import demo.{TsEventCaseClass, TsEventClass, TsEventWithLambda}
+import demo.{TsEventCaseClass, TsEventClass, TsEventPlain, TsEventWithLambda}
 
 trait DecodedFromString[T] extends Serializable {
   def decodeFromString(str: String): T
@@ -20,5 +20,9 @@ object DecodedFromString {
 
   implicit val tsEventWithLambdaDecoder: DecodedFromString[TsEventWithLambda] = new DecodedFromString[TsEventWithLambda] {
     override def decodeFromString(str: String): TsEventWithLambda = TsEventWithLambda(str.toLong)
+  }
+
+  implicit val tsEventPlainDecoder: DecodedFromString[TsEventPlain] = new DecodedFromString[TsEventPlain] {
+    override def decodeFromString(str: String): TsEventPlain= TsEventPlain(str.toLong)
   }
 }

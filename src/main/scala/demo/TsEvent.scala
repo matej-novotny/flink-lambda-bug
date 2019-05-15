@@ -15,3 +15,5 @@ class TsEventClass(val ts: Long) extends TsEventBase
 case class TsEventCaseClass(override val ts: Long) extends TsEventBase
 
 case class TsEventWithLambda(ts: Long, lambda: Long => Long = (in: Long) => 2 * in)
+
+case class TsEventPlain(ts: Long)

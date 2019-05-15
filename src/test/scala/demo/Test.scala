@@ -17,7 +17,45 @@ class Test extends FlatSpec  with Matchers with TestFlinkCluster with EmbeddedKa
     Test.timestamps.clear()
   }
 
-  "Flink" should "process classes with hidden lambdas or fail compilation" in {
+  "Flink" should "process classes or fail compilation" in {
+    val StopCondition: Long = 20
+    withRunningKafkaOnFoundPort(embeddedKafkaConfig()) { kc =>
+      val groupId = "test-group-id"
+      val topic = "test-topic"
+      val server = s"localhost:${kc.kafkaPort}"
+
+      val source = env.
+        addSource(
+          Sources.kafkaSource[TsEventPlain](server, groupId, Seq(topic))
+        ).
+        flatMap(_.toOption).
+        map { event =>
+          Test.timestamps += event.ts
+
+          event
+        }.
+        map { event =>
+          if (event.ts == StopCondition) throw new IllegalArgumentException("stopping test")
+
+          event
+        }
+
+      source.addSink(new PrintSinkFunction[TsEventPlain])
+
+      publishStringMessageToKafka(topic, "0")(kc)
+      publishStringMessageToKafka(topic, "1")(kc)
+      publishStringMessageToKafka(topic, "2")(kc)
+      publishStringMessageToKafka(topic, "invalid message")(kc)
+      publishStringMessageToKafka(topic, "3")(kc)
+      publishStringMessageToKafka(topic, StopCondition.toString)(kc)
+
+      Try(env.execute())
+
+      Test.timestamps.toList should be(List(0, 1, 2, 3, StopCondition))
+    }
+  }
+
+  it should "process classes with hidden lambdas or fail compilation" in {
     val StopCondition: Long = 20
     withRunningKafkaOnFoundPort(embeddedKafkaConfig()) { kc =>
       val groupId = "test-group-id"

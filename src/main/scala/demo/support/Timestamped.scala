@@ -2,7 +2,7 @@ package demo.support
 
 import java.io.Serializable
 
-import demo.{TsEventBase, TsEventWithLambda}
+import demo.{TsEventBase, TsEventPlain, TsEventWithLambda}
 
 import scala.util.Try
 
@@ -27,5 +27,9 @@ object Timestamped {
 
   implicit val tsEventWithLambdaTimestamp: Timestamped[TsEventWithLambda] = new Timestamped[TsEventWithLambda] {
     override def timestampOf(obj: TsEventWithLambda): Long = obj.ts
+  }
+
+  implicit val tsEventPlainTimestamp: Timestamped[TsEventPlain] = new Timestamped[TsEventPlain] {
+    override def timestampOf(obj: TsEventPlain): Long = obj.ts
   }
 }
